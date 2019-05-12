@@ -23,6 +23,7 @@ class App extends Component {
     this.toggleTimer = this.toggleTimer.bind(this);
     this.resetTimer = this.resetTimer.bind(this);
     this.updateTimer = this.updateTimer.bind(this);
+    this.addZero = this.addZero.bind(this);
   }
 
   incrementBreak() {
@@ -90,6 +91,10 @@ class App extends Component {
     });
   }
 
+  addZero(i) {
+    return i < 10 ? `0${i}` : i;
+  }
+
   render() {
     console.log(this.state.timeRemaining);
     return (
@@ -139,7 +144,9 @@ class App extends Component {
         <div id='timer-label'>Session</div>
         <div id='time-left'>
           {this.state.timeRemaining
-            ? `${this.state.timeRemaining.getMinutes()}:${this.state.timeRemaining.getSeconds()}`
+            ? `${this.addZero(
+                this.state.timeRemaining.getMinutes()
+              )}:${this.addZero(this.state.timeRemaining.getSeconds())}`
             : `${this.state.sessionLength}:00`}
         </div>
         <Button id='start_stop' onClick={this.toggleTimer}>
