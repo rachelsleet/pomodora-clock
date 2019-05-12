@@ -8,7 +8,7 @@ const INITIAL_STATE = {
   minLength: 1,
   isPlaying: false,
   isInSession: true, // if false means that Break is ongoing
-  timeRemaining: '',
+  timeRemaining: null,
   interval: null
 };
 
@@ -16,14 +16,17 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { ...INITIAL_STATE };
+
     this.incrementBreak = this.incrementBreak.bind(this);
     this.incrementSession = this.incrementSession.bind(this);
     this.decrementBreak = this.decrementBreak.bind(this);
     this.decrementSession = this.decrementSession.bind(this);
-    this.toggleTimer = this.toggleTimer.bind(this);
+    this.toggleStartStop = this.toggleStartStop.bind(this);
     this.resetTimer = this.resetTimer.bind(this);
     this.updateTimer = this.updateTimer.bind(this);
     this.addZero = this.addZero.bind(this);
+    this.setInitialTime = this.setInitialTime.bind(this);
+    this.switchSession = this.switchSession.bind(this);
   }
 
   incrementBreak() {
@@ -57,18 +60,13 @@ class App extends Component {
   resetTimer() {
     clearInterval(this.state.interval);
     this.setState({ ...INITIAL_STATE });
+    document.getElementById('beep').pause();
+    document.getElementById('beep').currentTime = 0;
   }
 
-  toggleTimer() {
+  toggleStartStop() {
     if (!this.state.isPlaying) {
-      if (!this.state.timeRemaining) {
-        console.log('creating date');
-        let time = new Date();
-        time.setMinutes(this.state.sessionLength, 0);
-        this.setState({
-          timeRemaining: time
-        });
-      }
+      this.updateTimer();
       this.setState({
         interval: setInterval(this.updateTimer, 1000),
         isPlaying: true
@@ -83,12 +81,46 @@ class App extends Component {
   }
 
   updateTimer() {
-    let newTime = new Date();
-    newTime.setTime(this.state.timeRemaining - 1000);
+    let time = new Date();
 
+    if (!this.state.timeRemaining) {
+      time = this.setInitialTime(time);
+      return;
+    } else {
+      time.setTime(this.state.timeRemaining);
+
+      if (time.getMinutes() + time.getSeconds() === 0) {
+        this.switchSession();
+      } else {
+        time.setTime(time.getTime() - 1000);
+        this.setState({
+          timeRemaining: time
+        });
+      }
+    }
+  }
+
+  setInitialTime(time) {
+    console.log('creating date');
+    time.setMinutes(
+      this.state.isInSession
+        ? this.state.sessionLength
+        : this.state.breakLength,
+      0
+    );
     this.setState({
-      timeRemaining: newTime
+      timeRemaining: time
     });
+  }
+
+  switchSession() {
+    console.log('switching break/session!');
+    this.setState({
+      timeRemaining: null,
+      isInSession: !this.state.isInSession
+    });
+    document.getElementById('beep').play();
+    this.updateTimer();
   }
 
   addZero(i) {
@@ -96,7 +128,6 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.timeRemaining);
     return (
       <div style={{ textAlign: 'center' }}>
         <h1>Pomodora Clock</h1>
@@ -141,20 +172,23 @@ class App extends Component {
           </div>
         </div>
 
-        <div id='timer-label'>Session</div>
+        <div id='timer-label'>
+          {this.state.isInSession ? `Session` : `Break`}
+        </div>
         <div id='time-left'>
           {this.state.timeRemaining
             ? `${this.addZero(
                 this.state.timeRemaining.getMinutes()
               )}:${this.addZero(this.state.timeRemaining.getSeconds())}`
-            : `${this.state.sessionLength}:00`}
+            : `${this.addZero(this.state.sessionLength)}:00`}
         </div>
-        <Button id='start_stop' onClick={this.toggleTimer}>
+        <Button id='start_stop' onClick={this.toggleStartStop}>
           {this.state.isPlaying ? 'Stop' : 'Start'}
         </Button>
         <Button id='reset' onClick={this.resetTimer}>
           Reset
         </Button>
+        <audio id='beep' preload='auto' src='https://goo.gl/65cBl1' />
       </div>
     );
   }
