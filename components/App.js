@@ -8,7 +8,7 @@ const INITIAL_STATE = {
   minLength: 1,
   isPlaying: false,
   isInSession: true, // if false means that Break is ongoing
-  timeRemaining: [25, 0],
+  timeRemaining: '',
   interval: null
 };
 
@@ -60,6 +60,14 @@ class App extends Component {
 
   toggleTimer() {
     if (!this.state.isPlaying) {
+      if (!this.state.timeRemaining) {
+        console.log('creating date');
+        let time = new Date();
+        time.setMinutes(this.state.sessionLength, 0);
+        this.setState({
+          timeRemaining: time
+        });
+      }
       this.setState({
         interval: setInterval(this.updateTimer, 1000),
         isPlaying: true
@@ -74,10 +82,16 @@ class App extends Component {
   }
 
   updateTimer() {
-    console.log('timer running');
+    let newTime = new Date();
+    newTime.setTime(this.state.timeRemaining - 1000);
+
+    this.setState({
+      timeRemaining: newTime
+    });
   }
 
   render() {
+    console.log(this.state.timeRemaining);
     return (
       <div style={{ textAlign: 'center' }}>
         <h1>Pomodora Clock</h1>
@@ -124,7 +138,9 @@ class App extends Component {
 
         <div id='timer-label'>Session</div>
         <div id='time-left'>
-          {this.state.isPlaying ? 'playing' : `${this.state.sessionLength}:00`}
+          {this.state.timeRemaining
+            ? `${this.state.timeRemaining.getMinutes()}:${this.state.timeRemaining.getSeconds()}`
+            : `${this.state.sessionLength}:00`}
         </div>
         <Button id='start_stop' onClick={this.toggleTimer}>
           {this.state.isPlaying ? 'Stop' : 'Start'}
