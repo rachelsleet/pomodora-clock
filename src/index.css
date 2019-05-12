@@ -1,0 +1,17 @@
+body {
+  background: #002c3e;
+  padding: 30px;
+  color: #f8f8f8;
+}
+
+.btn {
+  margin: 10px;
+}
+
+.btn-light {
+  width: 30px;
+}
+
+.btn-xxl {
+  width: 70px;
+}

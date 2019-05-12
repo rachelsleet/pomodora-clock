@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Button from 'react-bootstrap/Button';
+import './App.css';
 
 const INITIAL_STATE = {
   breakLength: 5,
@@ -139,6 +140,7 @@ class App extends Component {
                 id='break-increment'
                 variant='light'
                 onClick={this.incrementBreak}
+                size='sm'
               >
                 +
               </Button>
@@ -146,6 +148,7 @@ class App extends Component {
                 id='break-decrement'
                 variant='light'
                 onClick={this.decrementBreak}
+                size='sm'
               >
                 -
               </Button>
@@ -157,6 +160,7 @@ class App extends Component {
                 id='session-increment'
                 variant='light'
                 onClick={this.incrementSession}
+                size='sm'
               >
                 +
               </Button>
@@ -164,6 +168,7 @@ class App extends Component {
                 id='session-decrement'
                 variant='light'
                 onClick={this.decrementSession}
+                size='sm'
               >
                 -
               </Button>{' '}
@@ -182,10 +187,10 @@ class App extends Component {
               )}:${this.addZero(this.state.timeRemaining.getSeconds())}`
             : `${this.addZero(this.state.sessionLength)}:00`}
         </div>
-        <Button id='start_stop' onClick={this.toggleStartStop}>
+        <Button id='start_stop' size='xxl' onClick={this.toggleStartStop}>
           {this.state.isPlaying ? 'Stop' : 'Start'}
         </Button>
-        <Button id='reset' onClick={this.resetTimer}>
+        <Button id='reset' size='xxl' onClick={this.resetTimer}>
           Reset
         </Button>
         <audio id='beep' preload='auto' src='https://goo.gl/65cBl1' />

@@ -1,0 +1,9 @@
+#time-left {
+  font-size: 3em;
+}
+
+#start_stop,
+#reset {
+  background-color: #f7444e;
+  border-color: #f7444e;
+}
